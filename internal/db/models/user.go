@@ -88,11 +88,6 @@ func (model User) UpdateStatus() error {
 	return DB.Model(&model).Update("status", model.Status).Error
 }
 
-// 重置密码
-func (model User) UpdatePassword() error {
-	return DB.Model(&model).Update("password", model.Password).Update("salt", model.Salt).Error
-}
-
 // 列表(模糊)查询
 func (model User) SelectUserList(page, size int, name string) (users []UserInfo, total int64, err error) {
 	tx := DB.Model(model).
@@ -120,49 +115,13 @@ func (model User) SelectUserList(page, size int, name string) (users []UserInfo,
 	return
 }
 
-// 判断当前客户名是否存在
-func (model User) SelectUserByName() (count int64, err error) {
-	DB.Instance.Raw("SELECT 1 FROM ip_user WHERE name = ? limit 1", model.Name).Scan(&count)
-	return
-}
-
-// 判断除当前客户外，当前客户名是否存在
-func (model User) SelectUserByNameExceptSelf() (count int64, err error) {
-	DB.Instance.Raw("SELECT 1 FROM ip_user WHERE name = ? and id != ? limit 1",
-		model.Name,
-		model.Id).
-		Scan(&count)
-	return
-}
-
-// 删除客户
+// 删除用户
 func (model User) Delete() error {
 	return DB.Model(&model).Where("id = ?", model.Id).Delete(model).Error
-}
-
-type MachineListInfo struct {
-	MachineList   string `json:"machine_list"`
-	MachineNumber int32  `json:"machine_number"`
-}
-
-// 更新用户机器列表
-func (model User) UpdateMachineList() error {
-	return DB.Model(&model).Select("machine_list", "machine_number", "update_time").Updates(model).Error
 }
 
 // 查询所有用户信息
 func (model User) FindAll() (users []UserInfo, err error) {
 	err = DB.Instance.Raw("SELECT * FROM ip_user").Scan(&users).Error
 	return
-}
-
-// 获取用户名列表
-func (model User) GetUsernameList() (userIdsAndNames []UserIdAndName, err error) {
-	err = DB.Instance.Raw("SELECT id, name FROM ip_user").Scan(&userIdsAndNames).Error
-	return
-}
-
-// 更新用户登录信息
-func (model User) UpdateLoginInfo() error {
-	return DB.Model(&model).Select("login_ip", "login_time").Updates(model).Error
 }

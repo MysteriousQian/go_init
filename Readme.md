@@ -1,6 +1,6 @@
 # 版本 V1.0.0
 
-# ipfast-tob
+# go-initial
 
 ## 目录
 - [项目说明](#项目说明)
@@ -9,8 +9,7 @@
 - [主要功能](#主要功能)
 
 ## 项目说明
-ToB 的流量后台服务
-提供流量 账号相关API接口
+GO项目初始化文件
 #### 目录结构
 ```
 .
@@ -22,14 +21,6 @@ ToB 的流量后台服务
 │   │   ├── static/             静态文件图片资源等(即将废弃⚠️)
 │   │   ├── main_test.go        测试入口文件
 │   │   └── main.go             服务入口文件
-│   └── grpcTrafficWriter/   GRPC服务入口,向外提供流量接收服务
-│   │   ├── config.yaml         配置文件
-│   │   ├── main_test.go        测试入口文件
-│   │   └── main.go             服务入口文件
-│   └── grpcTrafficWriter/   消息队列处理服务专门处理Kafka消息队列中的流量数据
-│       ├── config.yaml         配置文件
-│       ├── main_test.go        测试入口文件
-│       └── main.go             服务入口文件
 ├── docker/                  docker镜像打包配置文件(DockerFile)
 ├── internal/                服务内部逻辑处理
 │   ├── api/                    外部接口

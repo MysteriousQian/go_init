@@ -1,0 +1,101 @@
+name: tob_group
+
+services:
+  tob: 
+    image: dahangkk/tob:${MAIN_IMAGE_NAME}
+    container_name: ${MAIN_CONTAINER_NAME}
+    restart: always
+    ports:
+      - "${MAIN_HOST_PORT}:${MAIN_CONTAINER_PORT}"
+      - "${MAIN_ALL_PORT}:${MAIN_ALL_PORT}"
+      - "${MAIN_CONFIG_PORT}:${MAIN_CONFIG_PORT}"
+    volumes:
+      - ./api/config.yaml:/app/config.yaml
+      - ./api/locales:/app/locales
+      - ./api/static:/app/static
+      - ./api/log:/app/log
+    networks:
+      tob_network:
+        ipv4_address: 172.101.100.2
+ 
+  tob-grpc: 
+    image: dahangkk/tob-grpc-traffic-writer:${GRPC_IMAGE_NAME}
+    container_name: ${GRPC_CONTAINER_NAME}
+    restart: always
+    ports:
+      - "${GRPC_CONTAINER_PORT}:${GRPC_CONTAINER_PORT}"
+    volumes:
+      - ./grpcTrafficWriter/config.yaml:/app/config.yaml
+      - ./grpcTrafficWriter/log:/app/log
+    networks:
+      tob_network:
+        ipv4_address: 172.101.100.3
+
+  tob-process: 
+    image: dahangkk/tob-traffic-data-processor:${PROCESS_IMAGE_NAME}
+    container_name: ${PROCESS_CONTAINER_NAME}
+    restart: always
+    volumes:
+      - ./trafficDataProcessor/config.yaml:/app/config.yaml
+      - ./trafficDataProcessor/log:/app/log
+    networks:
+      tob_network:
+        ipv4_address: 172.101.100.4
+
+  mysql:
+    image: mysql:8.0.31
+    command: --default-authentication-plugin=mysql_native_password
+    restart: always
+    environment:
+      MYSQL_ROOT_PASSWORD: mysdkdata
+      MYSQL_DATABASE: ipfast_tob 
+      TZ: Asia/Shanghai
+    volumes:
+      - ./mysql:/var/lib/mysql
+      - /etc/localtime:/etc/localtime:ro
+      - ./etc/mysql/my.cnf:/etc/mysql/my.cnf 
+    ports:
+      - "29996:3306"
+    networks:
+      tob_network:
+        ipv4_address: 172.101.100.5
+
+  nginx:
+    image: nginx
+    container_name: nginx
+    networks:
+      tob_network:
+        ipv4_address: 172.101.100.6
+    ports:
+      - "80:80"
+      - "443:443"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "50m"
+        max-file: "1"
+    ulimits:
+      nofile:
+        soft: 125000
+        hard: 125000
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /home/www:/home/www
+      - /etc/nginx/conf.d:/etc/nginx/conf.d
+      - /etc/nginx/nginx.conf:/etc/nginx/nginx.conf
+      - /var/log/nginx:/var/log/nginx
+    privileged: true
+    restart: always
+
+networks:
+  tob_network:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 172.101.0.0/16
+          gateway: 172.101.100.1
+
+  
+  #  docker compose -f ipfast_group.yml up -d
+  #  docker compose -f ipfast_group.yml down  --volumes 
+ 

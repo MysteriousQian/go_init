@@ -1,0 +1,35 @@
+syntax = "proto3";
+package flowProto;
+option go_package = "./flowProto";
+// protoc --go_out=. --go-grpc_out=. flowService.proto
+
+// 流量上报数据
+message FlowReport {
+  repeated Flow flows = 1; //流量信息
+  string client_ip = 2; //客户端IP
+  int64 up_time = 3; //上报时间戳
+}
+
+message Flow{
+  int64 account_id = 1; // 账号ID
+  int64 custmer_id = 2; // 客户ID
+  int64 up_flow = 3; // 上行流量
+}
+
+// 服务端 流量信息同步GRPC服务
+service ServerFlowService {
+  rpc SyncFlow (ServerFlowRequest) returns (ServerFlowResponse) {}
+}
+
+// 服务端 流量信息GRPC请求参数
+message ServerFlowRequest {
+  FlowReport flow_datas  =1; // 流量数据
+}
+
+// 服务端 全量GRPC响应参数
+message ServerFlowResponse {
+  string message = 1; // 响应消息
+  int32  result = 2; // 响应结果
+}
+
+

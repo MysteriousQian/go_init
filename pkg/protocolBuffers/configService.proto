@@ -1,0 +1,39 @@
+syntax = "proto3";
+package configProto;
+option go_package = "./configProto";
+// protoc --go_out=. --go-grpc_out=. configService.proto
+
+message Configs {
+  repeated Int64Configs int64_configs = 1; 
+  repeated Int32Configs int32_configs = 2; 
+  repeated StringConfigs string_configs = 3; 
+}
+
+message Int64Configs{
+  string key = 1; 
+  int64 value = 2; 
+}
+
+message Int32Configs{
+  string key = 1; 
+  int32 value = 2; 
+}
+
+message StringConfigs{
+  string key = 1; 
+  string value = 2; 
+}
+
+service ConfigService {
+  rpc SyncConfigs (ConfigRequest) returns (ConfigResponse) {}
+}
+
+message ConfigRequest {}
+
+message ConfigResponse {
+  string message = 1; // 响应消息
+  int32  result = 2; // 响应结果
+  Configs configs = 3; // 配置信息
+}
+
+

@@ -1,0 +1,38 @@
+# 服务配置
+server:
+  debug: true # 是否开启debug模式
+  serverAddr: customer.net2fast.com # 服务地址
+
+# AD接口服务配置,支持热更新
+web:
+  port: 8091 # 接口服务端口号
+  mode: release # debug, release gin 的运行模式
+  recordLog: true # 是否开启记录请求日志中间件
+  recovery: true # 是否开启恢复中间件
+  allowCors: true # 是否开启允许跨域请求中间件
+  readTimeout: 15 # 读取超时时间
+  weiteTimeout: 15 # 写入超时时间
+
+# 日志配置,支持热更新
+logging:
+  level: debug # 日志级别 fatalln > error > warning > info > debug > trace > silent
+  console: true
+  path: ./log/tob.log # 日志路径
+
+# 数据库配置,支持热更新
+database:
+  type: mysql # 数据库类型
+  host: 127.0.0.1:3306 # 数据库地址
+  user: root # 数据库用户名
+  password: 123456 # 数据库密码
+  dbname: ipfast_tob # 数据库名称
+  log: info # 数据库日志级别  silent >  rrror > Warn  > Info
+
+kafka:
+  topic: TobSyncFlowData # flow # kafka topic
+  brokers: 16.162.19.205:80 # kafka地址
+  minBytes: 0 # kafka消费者最小字节数
+  maxBytes: 0 # kafka消费者最大字节数
+  group: syncFlowData # Kafka消费者组ID
+  partition: 0 # kafka分区
+

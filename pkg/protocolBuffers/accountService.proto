@@ -1,0 +1,50 @@
+syntax = "proto3";
+package accountProto;
+option go_package = "./accountProto";
+// protoc --go_out=. --go-grpc_out=. accountService.proto
+
+// 账号数据
+message Account {
+  int64 id = 1; // 账号ID
+  int64 custumer_id = 2; //客户ID
+  string name = 3; // 账号名称
+  string password = 4; //账号密码
+  int32 status = 5;//账号状态
+}
+
+// 服务端 账号全量同步GRPC服务
+service ServerAccountService {
+  rpc SyncAccount (ServerAccountRequest) returns (ServerAccountResponse) {}
+}
+
+// 服务端 全量GRPC请求参数
+message ServerAccountRequest {
+  string ip = 1; // 客户端IP
+  int32 action = 2; // 1000: 账号数据的全量获取
+}
+
+// 服务端 全量GRPC响应参数
+message ServerAccountResponse {
+  repeated  Account accounts  =1; // 账号数据
+  string message = 2; // 响应消息
+  int32  result = 3; // 响应结果
+}
+
+// 客户端 账号增量同步GRPC服务
+service ClientAccountService {
+  rpc SyncAccount (ClientAccountRequest) returns (ClientAccountResponse) {}
+}
+
+// 客户端 增量GRPC请求参数
+message ClientAccountRequest {
+  int32 action = 1; // 1001: 删除账号 1002: 新增和更新账号
+  Account account = 2; // 账号数据 
+}
+
+// 客户端 增量GRPC响应参数
+message ClientAccountResponse {
+  string message = 1; // 响应消息
+  int32  result = 2; // 响应结果
+}
+
+
